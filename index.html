@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>陈耀 · 个人档案</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  var t;
+  try { t = localStorage.getItem('theme'); } catch(e) {}
+  if (t === 'night') {
+    // Prevent white flash: inject a minimal style that targets <body> element.
+    // It applies the moment <body> is parsed, then is removed after body.night kicks in.
+    var s = document.createElement('style');
+    s.id = 'nightPreload';
+    s.textContent = 'body{background:#0d1117!important;color:#e6edf3!important}';
+    document.head.appendChild(s);
+  }
+})();
+</script>
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+/* ============================================================
+   DAY THEME (default) — clean, professional, resume-style
+   ============================================================ */
+:root {
+  --bg:             #fafaf7;
+  --bg-card:        #ffffff;
+  --bg-muted:       #f2f1ed;
+  --text:           #1e1e1e;
+  --text-muted:     #6e6e6e;
+  --text-light:     #999999;
+  --accent:         #2c3e6b;
+  --accent-soft:    #dce3f0;
+  --accent-warm:    #c0392b;
+  --border:         #e2e1dc;
+  --border-light:   #eeede9;
+  --shadow-sm:      0 1px 2px rgba(0,0,0,.04);
+  --shadow:         0 1px 3px rgba(0,0,0,.05), 0 6px 20px rgba(0,0,0,.04);
+  --shadow-lg:      0 4px 12px rgba(0,0,0,.07), 0 16px 48px rgba(0,0,0,.05);
+  --radius:         12px;
+  --radius-sm:      6px;
+  --radius-lg:      18px;
+  --font:           system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono:      'SF Mono', 'JetBrains Mono', 'Consolas', monospace;
+  --transition:     0.4s cubic-bezier(.4,0,.2,1);
+  --bg-image:       none;
+  --glass-bg:       transparent;
+  --glass-border:   transparent;
+  --glass-shadow:   none;
+  --avatar-ring:    var(--accent-soft);
+}
+
+/* ============================================================
+   NIGHT THEME — playful, warm neon, entertainment
+   ============================================================ */
+body.night {
+  --bg:             #0d1117;
+  --bg-card:        rgba(22,27,34,0.85);
+  --bg-muted:       rgba(30,36,46,0.9);
+  --text:           #e6edf3;
+  --text-muted:     #8b949e;
+  --text-light:     #6e7681;
+  --accent:         #ff6b6b;
+  --accent-soft:    rgba(255,107,107,0.15);
+  --accent-warm:    #ffd93d;
+  --border:         rgba(255,255,255,0.08);
+  --border-light:   rgba(255,255,255,0.05);
+  --shadow-sm:      0 1px 2px rgba(0,0,0,.2);
+  --shadow:         0 4px 16px rgba(0,0,0,.25);
+  --shadow-lg:      0 8px 32px rgba(0,0,0,.35);
+  --font:           system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --glass-bg:       rgba(22,27,34,0.7);
+  --glass-border:   rgba(255,255,255,0.1);
+  --glass-shadow:   0 8px 32px rgba(0,0,0,.3);
+  --avatar-ring:    rgba(255,107,107,0.4);
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  transition: color var(--transition);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Night background layer */
+.night-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition), visibility 0s var(--transition);
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+body.night .night-bg { opacity: 1; visibility: visible; transition: opacity var(--transition), visibility 0s; }
+#starCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.2s ease, visibility 0s 1.2s;
+  pointer-events: none;
+}
+body.night #starCanvas { opacity: 1; visibility: visible; transition: opacity 1.2s ease, visibility 0s; }
+
+/* Night gradient overlay (fallback when no bg image) */
+.night-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, rgba(255,107,107,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 70%, rgba(255,217,61,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(107,203,119,0.04) 0%, transparent 50%);
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 28px 100px;
+}
+
+/* ============================================================
+   SECTION TITLES (shared)
+   ============================================================ */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  transition: color var(--transition), border-color var(--transition);
+}
+.section-label::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: background var(--transition);
+}
+body.night .section-label::before {
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* ============================================================
+   MUSEUM HEADER
+   ============================================================ */
+.museum-header {
+  text-align: center;
+  padding: 52px 24px 28px;
+}
+.museum-header .eyebrow {
+  font-size: 11px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 10px;
+  transition: color var(--transition);
+}
+.museum-header h1 {
+  font-size: clamp(26px, 5vw, 40px);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.museum-header h1 em {
+  font-style: normal;
+  color: var(--accent);
+  transition: color var(--transition);
+}
+body.night .museum-header h1 em {
+  text-shadow: 0 0 24px rgba(255,107,107,0.4);
+}
+.museum-header .subhead {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  transition: color var(--transition);
+}
+
+/* Mode switch hint (small icon top-right) */
+.mode-hint {
+  position: fixed;
+  top: 20px; right: 24px;
+  font-size: 22px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  z-index: 100;
+  user-select: none;
+}
+.mode-hint:hover { opacity: 0.9; }
+
+/* ============================================================
+   SHARED: SELF-INTRO CARD (style changes with theme)
+   ============================================================ */
+.intro-card {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 44px;
+  box-shadow: var(--shadow);
+  transition: background var(--transition), box-shadow var(--transition);
+  position: relative;
+  overflow: visible;
+  margin-bottom: 56px;
+  border: 1px solid var(--border-light);
+}
+
+/* --- Avatar block --- */
+.avatar-section {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.avatar-wrap {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+.avatar-img {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--bg-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  border: 3px solid var(--avatar-ring);
+  position: relative;
+  z-index: 2;
+}
+.avatar-wrap:hover .avatar-img {
+  transform: scale(1.07);
+  box-shadow: 0 0 0 10px var(--avatar-ring);
+}
+.avatar-wrap:active .avatar-img {
+  transform: scale(0.94);
+}
+body.night .avatar-img {
+  border-color: rgba(255,107,107,0.5);
+  box-shadow: 0 0 20px rgba(255,107,107,0.2);
+}
+body.night .avatar-wrap:hover .avatar-img {
+  box-shadow: 0 0 0 10px rgba(255,107,107,0.25), 0 0 30px rgba(255,107,107,0.3);
+}
+
+/* Toast bubble */
+.toast {
+  position: absolute;
+  bottom: calc(100% + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+  border: 1px solid var(--border);
+  z-index: 10;
+}
+.toast::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: var(--border);
+}
+.avatar-wrap:hover .toast { opacity: 1; }
+
+/* Click counter dots */
+.click-dots {
+  display: flex;
+  gap: 4px;
+  transition: opacity 0.3s;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background var(--transition), box-shadow var(--transition);
+}
+.dot.filled {
+  background: var(--accent);
+}
+body.night .dot.filled {
+  box-shadow: 0 0 6px var(--accent);
+}
+body:not(.night) .click-dots.hidden-when-zero:not(.has-clicks) {
+  opacity: 0.3;
+}
+
+/* Ripple */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.3;
+  transform: scale(0);
+  animation: ripple-in 0.55s ease-out forwards;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes ripple-in { to { transform: scale(3); opacity: 0; } }
+
+/* --- Info block --- */
+.intro-info { flex: 1; min-width: 0; }
+.intro-info .nickname {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: color var(--transition);
+}
+.intro-info .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 16px;
+}
+.intro-info .tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-muted);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+  transition: color var(--transition);
+  font-weight: 500;
+}
+.intro-info .bio-text {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.9;
+  transition: color var(--transition);
+}
+.day-only { display: block; }
+.night-only { display: none; }
+body.night .day-only { display: none; }
+body.night .night-only { display: block; }
+
+/* Fix: .intro-info .tags (0,0,2,0) beats bare .night-only (0,0,1,0) */
+.intro-info .tags.night-only { display: none; }
+body.night .intro-info .tags.night-only { display: flex; }
+
+/* ============================================================
+   DAY CONTENT — professional resume
+   ============================================================ */
+.day-content {
+  display: block;
+  opacity: 1;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: translateY(0);
+}
+body.night .day-content {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+/* Resume card */
+.resume-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  margin-bottom: 28px;
+  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+.resume-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+  transition: color var(--transition);
+}
+.resume-card h3 .dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: background var(--transition);
+}
+
+/* Timeline */
+.timeline {
+  list-style: none;
+  position: relative;
+  padding-left: 24px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 4px; bottom: 4px;
+  width: 1px;
+  background: var(--border);
+  transition: background var(--transition);
+}
+.timeline li {
+  position: relative;
+  padding: 0 0 18px 20px;
+  font-size: 14px;
+}
+.timeline li:last-child { padding-bottom: 0; }
+.timeline li::before {
+  content: '';
+  position: absolute;
+  left: -26px; top: 6px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-card);
+  transition: background var(--transition), border-color var(--transition);
+}
+.timeline li .tl-title {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+.timeline li .tl-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.timeline li .tl-date {
+  font-size: 12px;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+
+/* ============================================================
+   NIGHT CONTENT — entertainment / interests
+   ============================================================ */
+.night-content {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: translateY(12px);
+}
+body.night .night-content {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Glass card for night */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 32px 36px;
+  box-shadow: var(--glass-shadow);
+  margin-bottom: 32px;
+  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+body.night .glass-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.1s ease-out, background var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+.glass-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+}
+
+/* Game list (vertical rows) */
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.game-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  border: 1px solid var(--border-light);
+  transition: transform 0.25s, background var(--transition);
+  cursor: default;
+}
+.game-row:hover {
+  transform: translateX(6px);
+  background: var(--accent-soft);
+}
+.game-row .game-icon {
+  width: 48px; height: 48px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.game-row .game-icon img {
+  width: 100%; height: 100%;
+  border-radius: 7px;
+  object-fit: cover;
+  display: block;
+}
+.game-row .game-body {
+  flex: 1;
+  min-width: 0;
+}
+.game-row .game-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.game-row .game-bar-wrap {
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.game-row .game-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+  transition: width 0.6s ease;
+}
+.game-row .game-hours {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 52px;
+  flex-shrink: 0;
+}
+
+/* Game list toggle */
+.game-toggle-wrap { text-align: center; margin-top: 12px; }
+.game-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 28px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.25s;
+}
+.game-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+.game-hidden { display: none; }
+.game-hidden.show { display: flex; }
+.playlist li.hidden-row { display: none; }
+.playlist li.hidden-row.show { display: flex; }
+/* Book carousel */
+.book-carousel { position: relative; min-height: 260px; }
+.book-page {
+  display: none;
+  animation: bookSlideIn 0.4s ease;
+}
+.book-page.active { display: block; }
+@keyframes bookSlideIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.book-page-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--transition);
+}
+.book-page-header .page-author { font-size: 17px; font-weight: 700; }
+.book-page-header .page-cat {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.book-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: border-color var(--transition);
+}
+.book-item:last-child { border-bottom: none; }
+.book-item .book-spine {
+  width: 5px;
+  min-height: 48px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+.book-item .book-detail { flex: 1; min-width: 0; }
+.book-item .book-detail .book-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.book-item .book-detail .book-sub {
+  font-size: 11px; color: var(--text-muted); margin-bottom: 6px;
+}
+.book-item .book-detail .book-quote {
+  font-size: 13px; color: var(--text-muted); font-style: italic; line-height: 1.7;
+}
+.book-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 22px;
+}
+.book-nav-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  font-family: var(--font);
+}
+.book-nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.book-nav-btn:disabled { opacity: 0.25; cursor: default; }
+.book-dots { display: flex; gap: 6px; }
+.book-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.3s;
+  cursor: pointer;
+}
+.book-dot.active { background: var(--accent); }
+body.night .book-dot.active { box-shadow: 0 0 6px var(--accent); }
+
+/* Music playlist */
+.playlist {
+  list-style: none;
+}
+.playlist li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+  cursor: default;
+}
+.playlist li:hover { background: var(--bg-muted); }
+.playlist li .track-info { flex: 1; min-width: 0; }
+.playlist li .track-name {
+  font-size: 14px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.playlist li .track-artist {
+  font-size: 12px; color: var(--text-muted);
+}
+.playlist li .track-rank {
+  width: 26px; text-align: center;
+  font-size: 14px; font-weight: 700;
+  color: var(--text-light);
+  font-family: var(--font-mono);
+}
+.playlist li:nth-child(1) .track-rank { color: #f0c040; font-size: 16px; }
+.playlist li:nth-child(2) .track-rank { color: #b0b8c0; }
+.playlist li:nth-child(3) .track-rank { color: #c8945c; }
+.playlist li .track-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-weight: 500;
+  text-align: right;
+  min-width: 56px;
+}
+.playlist li .track-bar-wrap {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+.playlist li .track-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: width 0.6s ease;
+}
+.playlist li { cursor: pointer; }
+.playlist li.playing {
+  background: var(--bg-muted);
+  box-shadow: inset 3px 0 0 var(--accent);
+  animation: playingGlow 2s ease-in-out infinite;
+}
+.playlist li.playing .track-name { color: var(--accent); }
+@keyframes playingGlow {
+  0%, 100% { box-shadow: inset 3px 0 0 var(--accent); }
+  50% { box-shadow: inset 3px 0 0 var(--accent), inset 0 0 20px var(--accent-soft); }
+}
+
+/* Mini player EQ bars */
+.mp-eq {
+  display: none; align-items: flex-end; gap: 2px;
+  height: 16px; margin-left: 4px;
+}
+.mp-eq.active { display: flex; }
+.mp-eq span {
+  width: 3px; background: var(--accent); border-radius: 1px;
+  animation: eqBounce 0.8s ease-in-out infinite alternate;
+}
+.mp-eq span:nth-child(1) { animation-delay: 0s; height: 8px; }
+.mp-eq span:nth-child(2) { animation-delay: 0.15s; height: 12px; }
+.mp-eq span:nth-child(3) { animation-delay: 0.3s; height: 6px; }
+.mp-eq span:nth-child(4) { animation-delay: 0.1s; height: 14px; }
+@keyframes eqBounce {
+  0% { transform: scaleY(0.4); }
+  100% { transform: scaleY(1); }
+}
+
+/* Mini audio player */
+.mini-player {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+.mini-player.show { display: flex; }
+.mini-player .mp-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.mini-player .mp-btn:hover { background: var(--accent); color: #fff; }
+.mini-player .mp-info {
+  flex: 1; min-width: 0;
+  font-size: 13px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mini-player .mp-artist { color: var(--text-muted); font-size: 11px; }
+.ext-player { margin-top: 8px; }
+.ext-player iframe { border: 0; width: 100%; height: 66px; border-radius: var(--radius-sm); }
+
+
+/* Cursor trail canvas */
+#trailCanvas {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+  opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0s 0.3s;
+}
+body.night #trailCanvas { opacity: 1; visibility: visible; transition: opacity 0.3s, visibility 0s; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.museum-footer {
+  text-align: center;
+  padding: 40px 24px;
+  font-size: 12px;
+  color: var(--text-light);
+  border-top: 1px solid var(--border);
+  transition: border-color var(--transition), color var(--transition);
+}
+.museum-footer .switch-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: var(--font);
+}
+.museum-footer .switch-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 700px) {
+  .intro-card { flex-direction: column; align-items: center; text-align: center; padding: 28px; }
+  .intro-info .tags { justify-content: center; }
+  .resume-card { padding: 24px; }
+  .glass-card { padding: 24px; }
+  .game-row { flex-wrap: wrap; gap: 10px; } .game-row .game-hours { min-width: auto; }
+  .book-item { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- Night background layer -->
+<div class="night-bg" id="nightBg"><canvas id="starCanvas"></canvas></div>
+
+<!-- Mode switch hint -->
+<div class="mode-hint" id="modeHint" title="切换日夜模式 (或按 N 键)">☀️</div>
+
+<!-- ============================================================
+     MUSEUM HEADER
+     ============================================================ -->
+<header class="museum-header">
+  <div class="eyebrow">Personal Archive</div>
+  <h1>个人<em>档案</em></h1>
+  <p class="subhead" id="headerSubhead">每一段经历，都值得被可视化地珍藏</p>
+</header>
+
+<div class="container">
+
+  <!-- ============================================================
+       SHARED: 自我介绍区 (style adapts to day/night)
+       ============================================================ -->
+  <div class="section-label">01 · 自我介绍</div>
+
+  <div class="intro-card">
+    <!-- Avatar -->
+    <div class="avatar-section">
+      <div class="avatar-wrap" id="avatarWrap">
+        <div class="toast" id="avatarToast">👋 你好呀，我是陈耀</div>
+        <div class="avatar-img" id="avatarImg">🧑‍💻</div>
+      </div>
+      <div class="click-dots hidden-when-zero" id="clickDots">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="intro-info">
+      <div class="nickname">陈耀</div>
+      <div class="tags day-only">
+        <span>🎓 上海交通大学</span>
+        <span>🔬 智能感知 · 本科在读</span>
+        <span>📧 cy8530@sjtu.edu.cn</span>
+      </div>
+      <div class="tags night-only">
+        <span>🎮 游戏</span>
+        <span>📚 阅读</span>
+        <span>🎵 音乐</span>
+        <span>⚽ 运动</span>
+      </div>
+      <p class="bio-text day-only" id="bioText">
+        聚焦AI前沿技术，熟悉CNN、Transformer等主流网络架构，紧跟大模型技术发展趋势，具备LLM应用开发及微调实战经验，了解AI Agent及RAG技术。自驱力强，善于利用开源社区快速掌握新框架，渴望在挑战性环境中解决实际问题。
+      </p>
+      <p class="bio-text night-only">
+        业余时间打打游戏、看看书、听听音乐、吃吃喝喝，偶尔运动，享受探索新技术的乐趣，也珍惜放下键盘的放空时刻。忙碌之余也别忘了生活。
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DAY CONTENT: 专业简历
+       ============================================================ -->
+  <div class="day-content" id="dayContent">
+
+    <!-- 个人总结 -->
+    <div class="resume-card">
+      <h3><span class="dot"></span>个人总结</h3>
+      <ul class="timeline">
+        <li>
+          <div class="tl-title">聚焦AI前沿技术</div>
+          <div class="tl-sub">专注于深度学习领域，熟悉CNN、Transformer等主流网络架构；紧跟大模型（LLM）技术发展趋势，具备大模型应用开发及微调实战经验，了解AI Agent及RAG技术应用。</div>
+        </li>
+        <li>
+          <div class="tl-title">自驱力与工程能力</div>
+          <div class="tl-sub">拥有开阔的技术视野，善于利用开源社区资源快速掌握新框架与新工具；性格开朗乐观，具备强烈的责任心与团队协作意识，渴望在挑战性环境中通过解决实际问题实现快速成长。</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 教育背景 -->
+    <div class="resume-card">
+      <h3><span class="dot"></span>教育背景</h3>
+      <ul class="timeline">
+        <li>
+          <div class="tl-title">上海交通大学 · 智能感知 · 本科在读</div>
+          <div class="tl-sub">排名 19/63（前30%），上海交通大学本科生C等奖学金，预计2027年6月毕业</div>
+          <div class="tl-date">2023.9 — 至今</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 项目经历 -->
+    <div class="resume-card">
+      <h3><span class="dot"></span>项目经历</h3>
+      <ul class="timeline">
+
+        <li>
+          <div class="tl-title">基于YOLOv11与对比学习的巨核细胞检测与分类系统</div>
+          <div class="tl-sub">瑞金医院合作项目。针对传统病理诊断依赖专家人工镜检、标注主观性强且难以规模化等痛点，引入对比学习策略增强特征提取能力，融合先验概率分布优化分类边界，实现了对三种巨核细胞亚型的高精度检测与分类。成果已整理成论文 CCF-C 类会议（一作）在投，代码实现全流程自动化训练与推理。</div>
+          <div class="tl-date">2025.09 — 至今</div>
+        </li>
+
+        <li>
+          <div class="tl-title">基于RAG与AgentScope的智能问答系统全链路实践</div>
+          <div class="tl-sub">个人项目（阿里云ACP认证课程）。完整复现智能问答系统标准开发流程，涵盖文档解析、Embedding向量化、RAG构建、AgentScope集成到Ragas评估的全链路。基于AgentScope构建ReAct Agent，通过MCP协议管理外部工具。实施完整上下文工程，对比多种切片策略与Embedding模型，引入HyDE与Rerank提升召回率，设计Reflection机制抑制模型幻觉。</div>
+          <div class="tl-date">2026.04 — 2026.05</div>
+        </li>
+
+        <li>
+          <div class="tl-title">基于Spark与Docker的大数据推荐系统原型</div>
+          <div class="tl-sub">课程项目/个人项目。作为项目负责人，基于Docker搭建包含HDFS、Spark、Hive的伪分布式集群环境，构建端到端数据处理流水线。使用PySpark实现ALS协同过滤算法训练推荐模型，解决异构数据源类型转换难题，实现离线计算结果向在线存储的流转。</div>
+          <div class="tl-date">2026.04 — 2026.05</div>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- 荣誉奖项 -->
+    <div class="resume-card">
+      <h3><span class="dot"></span>荣誉 &amp; 奖项</h3>
+      <ul class="timeline">
+        <li>
+          <div class="tl-title">上海交通大学本科生C等奖学金</div>
+          <div class="tl-sub">上海交通大学 · 本科阶段</div>
+          <div class="tl-date"></div>
+        </li>
+      </ul>
+    </div>
+
+  </div><!-- /day-content -->
+
+  <!-- ============================================================
+       NIGHT CONTENT: 兴趣生活
+       ============================================================ -->
+  <div class="night-content" id="nightContent">
+
+    <!-- Steam 游戏库 -->
+    <div class="glass-card">
+      <h3>🎮 Steam 游戏时长</h3>
+      <div class="game-list" id="gamesGrid"></div>
+    </div>
+
+    <!-- 读书书单 -->
+    <div class="glass-card">
+      <h3>📚 读书书单</h3>
+      <div class="book-carousel" id="bookCarousel"></div>
+    </div>
+
+    <!-- 听歌排行 -->
+    <div class="glass-card">
+      <h3>🎵 听歌排行</h3>
+      <ul class="playlist" id="playlist"></ul>
+      <div class="mini-player" id="miniPlayer">
+        <button class="mp-btn" id="mpBtn">▶</button>
+        <div class="mp-info">
+          <div id="mpName">—</div>
+          <div class="mp-artist" id="mpArtist"></div>
+        </div>
+        <div class="mp-eq" id="mpEq"><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="ext-player" id="extPlayer"></div>
+        
+      <audio id="audioPlayer" style="display:none"></audio>
+    </div>
+
+  </div><!-- /night-content -->
+
+</div><!-- /container -->
+
+<footer class="museum-footer">
+  © 2026 陈耀
+  <br>
+  <button class="switch-btn" id="footerSwitch">切换日夜模式</button>
+</footer>
+
+<script>
+(function() {
+  /* ============================================================
+     THEME PERSISTENCE
+     ============================================================ */
+  function saveTheme(night) {
+    try { localStorage.setItem('theme', night ? 'night' : 'day'); } catch(e) {}
+  }
+  function loadTheme() {
+    try { return localStorage.getItem('theme'); } catch(e) { return null; }
+  }
+
+  /* ============================================================
+     STATE
+     ============================================================ */
+  let clickCount = 0;
+  let clickTimer = null;
+  const CLICK_WINDOW = 2000;
+
+  /* ============================================================
+     DOM REFS
+     ============================================================ */
+  const body       = document.body;
+  const modeHint   = document.getElementById('modeHint');
+  const footerBtn  = document.getElementById('footerSwitch');
+  const headerSub  = document.getElementById('headerSubhead');
+  const avatarWrap = document.getElementById('avatarWrap');
+  const avatarImg  = document.getElementById('avatarImg');
+  const avatarToast= document.getElementById('avatarToast');
+  const clickDots  = document.getElementById('clickDots');
+  const dots       = clickDots.querySelectorAll('.dot');
+
+  /* ============================================================
+     DATA
+     ============================================================ */
+
+  // Steam top 10 (excl. Love Is All Around), source: steam_games.json
+  const gamesData = [
+    { name: 'Counter-Strike 2', appid: 730, hours: 1091.2, iconB64: '/9j/4AAQSkZJRgABAQIAJQAlAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAABAYHCAX/xAAtEAABAwMCBQIFBQAAAAAAAAABAgMEAAURBjEHEiFBYRQjExUigZEkMlFx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAYH/8QAJhEAAgEDAwIHAQAAAAAAAAAAAQIDAAQxBSGREYEGEiJBYaGx8P/aAAwDAQACEQMRAD8AoYpq0VaFvPouKykNNqISkpzzHG/jFKzaStaUJBKlEAAbmqrKkxLLZXpUj2IcRkuuYGeVKRk9BvU/8Oaet1OZXwnTb59uOlJtVuTDGEXLflSzjNwzgXyU/qSTd2bPHjR/1Kkwy6XME/UcKGT1xtms/aktmnoDLRsuoXrs8snmT6BTCUYxjJUrvk7A7dq72suK2pNSsvRHJXp7csuJ+E2kJLjalZCVnY4AA6Ad/wCaQKsFrFIigO3b+FDXZSdhWvtFRFSLyh0t8zTIKiSOgPb7/wCUyNXmPcLvMtMhtLkZaS0ARkL6EKB8Hr+K5Hq/kWmmGmciZMBcKsftB7/jFD6SWmFGut0Ww9IVFZKkttIK1r6EkJA3JwB96lumyPbPDZQn1MfM3cY4+6VXSCZZLiQbDYc55rL/ABEsCNMazutoZdDjMd32znJCFAKSD5AIB/ql2jr9OlXO9z51wChMkPrcdSoEFKiTkYO2NseKBqtoCFAbNEjnav/Z' },
+    { name: 'Wallpaper Engine', appid: 431960, hours: 110.4, iconB64: '/9j/4AAQSkZJRgABAQIAJgAmAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADAREAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAABggBBQf/xAApEAABAwQBBAEEAwEAAAAAAAABAgMFBAYHESEACBIxIhNBUXEUFTJh/8QAGwEAAwEAAwEAAAAAAAAAAAAABAUGBwECAwj/xAAvEQABAwMCBQQBAgcAAAAAAAABAgMEAAURITEGE0FRcRJhgfCxFdEiMkORocHx/9oADAMBAAIRAxEAPwDCbBwRfl6M0MxG2JPzkAp5Pm/Q0ayl5APzCF60TwRsb0evrKVd4ERRaefQleNiRkeRWPJhSnmyplsnscHGaY2yMT5qvS+qeBobRex7bi0K+lVycSSzTpQgkBR/KiNaHokfvqWm360xI5e5odWMaBWpyenjevKNwy/IUEvpIJ3Jzih/K1tZoxnkp2zaOkVdVSKb+WzVxsMsofbCAtzw458fR1vnQ9kDou3XO2T4YmKUGxnBBUMg5wM+entXWRw6Y73JAKjjORnX/lAWO8iSWU55y27kp6KtjqqndJ0wELbUkbCkn7H/AL7B/XT99hMZHNaJBBpC+wmKjmtEggjrTFdzt95QiM6s2Lju4qi2bah4ehS3SR6kstsNqSBv8qIGgADwEgAe953w3brdKtpmTmg44pask5JJz9+av77dHbe+GkLISAMAeKFsc1udcx5Zk7PtXK003RxDAdkZaQd+DRPASlKRskngDY34qOwBvphdWrDaIiZEiIklRwABqfk7DufFDWiRcrp/VI6510H71umOMn5RwZnWCxhlaZYu+HuZCv6W4W2wh1Do9IVoAnZ0kg7IK0Hy1sdRU632y721y52pBaU1/OjcY7j41BGAcEYzVQxIkw5KY0pXqCtj7/fyNaWq7MV3pjjuhqK+86eibeuBdfVUtRHfTQzUIBI8w2kkt7BSdK555JOz1pNquMOda0ohk4bCQQc5Bxtk7/GnbSoDiKO9H9ReA/iORjGDr26Vdd4d1TNt937jUKWS9XR0ew43UaCVp0DryP8An8bHP46A4SbQ5ZBzNgpR/wA0w4mabckEudAPxUW7cV7dvWU5K9bKjWbijZloNSkM6spJIOwpJHO98gjf+lDx0QejLjbot7ipiylFKknII+7dxpsNaQ2W9fpxwcbY12I/0RUP57uu/e4S28h39YkwIi2mlqioSGZCgh4nhTi1kb5+RI1vwQAANkhDh9qHanbfBeHqdI9SlduwA/sPJOaoTxAw9KRIkHROwHf3z92qrlMl5CzFlxq6L0jTEQkSzWGjQ6yllNKw4dhBVoFZACQSfsknjpnBtcO0RCxFPqUrGTknJHXHTx70gvV0/UwMqB10A7E7Ua9xvbrdHdXfFDkjGtVETttykXTJSpVchp1hxCdKbcSr0ofcewdgga5l7He43D0ZVuuQUlxKj0JBBOhBHT89KuZ8F25OiTGIKSB1xj2NDtr9oXcLblyNy71NQyi0t/RUzUziChaQnSd/LnW9/vn2em7nFtjWj0+ojwk/tSF3hmS43ywkJ+RRCO17MkreDcjeM7QWBZaB9SQq6aXbKaZpKfkU748iR7VoDe/troVziq2JZKYSC66dACk6k/emtcx+FlN4EnASNzkbUo+Qb3ra2cmouOuWUmbaRVut0jtY4UqqGAshta0jXJSAdH0ft1oMVo8pDjyAlZAyBsDjUDwaUKjx2nDyRoCcHriv/9k=' },
+    { name: 'ELDEN RING NIGHTREIGN', appid: 2622380, hours: 99.5, iconB64: '/9j/4AAQSkZJRgABAQIAJQAlAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGgAAAgIDAAAAAAAAAAAAAAAABAYFBwECA//EACsQAAIBAwMCBQMFAAAAAAAAAAECAwQFEQASIQYxE0FRgaEHImEycXKR0f/EABcBAAMBAAAAAAAAAAAAAAAAAAIDBAX/xAAbEQEAAwADAQAAAAAAAAAAAAABAAIRAyExIv/aAAwDAQACEQMRAD8As662qCqpY6q3yqAw37Ebhv4/5pPuNbLDRzVtwkkipaNSzPtwcA448uTgAa1+nt8R6d6GqlBUqTEScYPpzpC+rFZV0VvFG8sgindsKp/XgqQPbn59dap8jsV5Hu0Xiqq6RswRQSSwCTG3JOSD3PcYPfXVK5HqEbwhGyDaWXIB9tU90hfrtYI4oJnWSlkGDHOhzGO+V79zg4/HOjbl13ULPICYI135AVCp7cnB51VxVo9rkU8iGBsdYanpCqcT0l3hicnOwZUZ8/tbkeXGcagerOq7THa5lpTDVVavsjqXXmPjJKEE4PI5B1TKXR58xNMtNDjkEEg+3OpColpEt22dqepk3YDqHU4x6BgCfbUNLX5DqMTPYNRVvjTl3LyFTllLN/YwfjRIZah2PgqsjfdtY7ioxwD+T39hoCjmeQy01MDsYgEtwAP21iBtlftp3kWINtO05LY7k/OjpcoC9wL1XQ9n/9k=' },
+    { name: 'Slay the Spire 2', appid: 2868840, hours: 81.2, iconB64: '/9j/4AAQSkZJRgABAQIAJQAlAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAABgcFAAT/xAAyEAABAwIFAgIHCQAAAAAAAAABAgMEBREABhIhMQcTInEIFBVRZKHSIyQzNGGBkaKx/8QAGQEAAgMBAAAAAAAAAAAAAAAAAgQAAQMF/8QAJREAAgIBAwIHAQAAAAAAAAAAAQIDEQAEElEhQRMUIjFhccHw/9oADAMBAAIRAxEAPwAV6PFDbhRapXqulpMNcZS2lcr0Nklw7b224G508cXqdIzLlOr1FiBTXXJEt9WlDaWHt/142A5JOwG+If0H/JZyta/sxy2q1vwXvfh108NOy9lOo5omSorVSS96pEKGO4tJCApQSNQBJ1gE22AO++OPPo1nkkd2axVAGu2F5kR+lY1PNiz+ZVX4tNZU4FtH7NfbJTqUNe3hBHKt+Bvz7sRT0kssK+6VSC212ojemT4hrAURo8wCTte41edsqvdRKjUpi5KoqVurICjKdLiQkXslKUhIH73/ANOPB13eXIhZOec063Ka2tWkWFy00dhjPTaUQyoQWs37kHt8YbalZFoxBfqhzxeZ3SOS9EpmZXYykpc0MJ8SQoEFSgQQQQQQSCD78K4FbeiyO47S6FLTYjtv01kJ8/AlJ+eCPSUsORMwRXpLbLjqGSjVuTpUo8ckXsCRe18LfZfx0X+/04fYoHYN/dBi26ic6fWXZUguNUqgxEkAdtmmslPn40qPzwY6vyHZVLyu7IUlTnZeT4UhIACkgAAAAAAAAAcDCY0v42L/AA59OCvVxbCYeXorMht5xlp7Xp2I1KB45A5Ava9sUuzxF28/hyF9xHXP/9k=' },
+    { name: 'Sid Meier\'s Civilization VI', appid: 289070, hours: 55.7, iconB64: '/9j/4AAQSkZJRgABAQIAJgAmAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADAREAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAABAYCBQcJ/8QALxAAAQMDAwEFBwUAAAAAAAAAAQIDBAAFEQYSMSEHIkFRgRQXI0JEUqGRscLR8P/EABkBAAMBAQEAAAAAAAAAAAAAAAQFBgIDAf/EACkRAAEEAAQEBwEBAAAAAAAAAAEAAgMEESExQQUSInEVJTJRYoHBctH/2gAMAwEAAhEDEQA/AOYMm3Xa4xpN5dQ8/HLhLspS894nxOecmhzYiEohLuo7IsVZjCZw3oG6qkqWpQAUcnpzRByQoGJwR12stxsS20T2HIq3BuSlZGSPPmh4bEVgExOxwRVirNVIEzeXFEMWy8WyNGvDbb0eOFpU1KSvA3Z6YOecivBZhdIYQ7qGy9dUnbCJ3N6DumDs7mtzVXTTslWI9yaUGyeEujqk/wC8hSnikZj5LjNWHPsnXBpWyCSjIcpBl3CrNG6cVcdWtxJSdjUVZck7uEpQeoPr09aKvWhFVMjNXZD7QfDqZmuiKTRubvpC6zv6tS6ilzc/CKtjQ8kDoP79a7UawqV2xb791w4lbN20+XbQdhor+c5nsntCc/XK/lS6IeayH4j8TWZ3ksQ+R/UmR5TkGc3IZVtdacC0keBBp69gkaWO0Km45HRPEjdRmtE1Jd4cOxSrpCO2XfUpSoD5AB3/AM/vUxVhkfO2CT0xY/fsq65YjjgdYi9U2H17rNKqlGpzmbvdpaxg4ExR/KqRx4eJP/kfioZSfC4x8v8AUpzYT8OW8w+ytl5tZStC0kFJB4Ip4p5QWt5baG1FakIztSeE55xWQ0AkgZlaLiQATkFDYr7T+laWUbF9vnusQmjIf3qCG2ElRBOegArAjYDzADFdDI8t5S44L//Z' },
+    { name: 'ELDEN RING', appid: 1245620, hours: 50.6, iconB64: '/9j/4AAQSkZJRgABAQIAJgAmAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADAREAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAABwUGCAMJ/8QALBAAAQMDAwQBAgcBAAAAAAAAAQIDBAUGEQASIQcTMVFBIjIIFBUzYXGB4f/EABgBAQADAQAAAAAAAAAAAAAAAAQDBQYH/8QAKhEAAQMCBQMEAgMAAAAAAAAAAQACAwQRBRIxQWETIVEUcYGxIpHB8PH/2gAMAwEAAhEDEQA/APOsW6+WgS0ok8gJHOpegbKi9S2+qk6FRKqzJbEKAievOfy77CXWzgjO4K4A+Dkjz50aaCPLeQ25BsUqCoc54EYzHxa4Vr6yW5UaXd1QiuW/SLfil0htuiNgRXNoAUW1blHGfgnjOq/Do2PhDuoXne+1/wBJ+ISOilLCwNHG/wAo/VQ32iApvBKd2PQ96uOkVUddp3SlbFDdqcZpLTIbcWrblSuCfWdSyTCNt3IDaZ00lm90x0jp69S7Qk0U09VVr9ZUxIHZ57MJIUpTSEjG95RAPOQAPGRrLTVgmmEuazGXHu7yfAC2tJhrqeLIW3c+xPA8DlWTqF0zj3FVbgBtmbRW67JT+gynTiSxKStKFtvJIHcaVnbuwCN2RnB0GnxA08bCH5iwfkNi3W45CsZ8KFSXAi2Y9jzzwgCoWI/QFPxpre2ahS0raT9RABxuUoeOc4SPWda2GpEwDm6FY2ro/TktdqF2sG6XqPIkdiCKjHU6FLZX9gHwpPzkHJyNKngbM2xVZFVPpXBy2L0qv627ppUKn1yhOpkRgSzNikJChnPbcCR9pyfWMq965ziOFVULnPpX66g/YXSsPxuCVgFQLWGv90+lP3v1N6e2rXhUqVBekV2OkiCh+WXGIpUCCQkgqWoZJ+s8Z0GDBq+qjMUhysOvkgbX/lLmx2kgsWnMR8f57BY7uu+259TlrgNRg4VFK5ClBJBPnjxn/uulUlG2mjDSbrmmIYjJWyl+WwKKqRctPiFbiZK2gnapCshJSn+R60zqt2RHU8hIukGR1XocmmiGy1Vm8qZU7LhzFNOLbBy43lBABUBhJOcEnQZLk3TIGZOxHZWyo/iBtCstONPWlWaan9lmqSpLSluNgYC3EpSAlfj7cjj3qIBzd1I+Nrh2KHqrWLelVKS5FceV31ZDryMKJH9cD/ONWLJA7XsUF0EkYs03C//Z' },
+    { name: 'Black Myth: Wukong', appid: 2358720, hours: 39.3, iconB64: '/9j/4AAQSkZJRgABAQIAJQAlAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABgcFBP/EAC0QAAEDAwMDAgQHAAAAAAAAAAECAwQFESEAEjEGEyJBUUJhcaEHFBUjM2KR/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAID/8QAGBEBAQADAAAAAAAAAAAAAAAAABEBAkH/2gAMAwEAAhEDEQA/AIDSIa5kpiMyNzrywhI+ZNhqwdO9BUGsV56MmS4mFBZSl4tOhS3nLm5vYhIFuPsNB+iK5TYbEZt6O1GfaUsuT+33FgKwkpHuCc29B8zqwIrMSkdJU9qjTI6nHmBsemFTSVJTjuFAScm4yQL4ycazXhEKlS3Y1al05DLqnmnlNBu25eCfbk/TWRMiKSw6tfiptW0pIzfVm6PoYqVfh1FNXiOzkRVSnExT/E6pZShKUIson3uRa976CfilBZgVyphFTZmLVIuso5WuxLhKdyimysZIvfAxfRWs6CUsyJCHGYza3OFqCE3IAxf763TKrDrDQcVMU32diL7rFsXNh7gWP+aO9PzYERDyp35ru7klssKsCBclKsjBISMZFyb4sdVit0pOzvGa5uTdWSNqvD+/kB+77X3WuORUZ076Br7XSSRUY0OozpclGwNhsNtDytbdkqzYYx7i9tDevK5+r1Rc1dMTAekEvLO9ai5u+LyPH0GuSLWqO2YofjSVoQhIcCFlB3bmyq3kR8K/Qcjg5GPVpkSTFiCMh1L6E7XSq9jgcXUfXceByNIV/9k=' },
+    { name: 'The Walking Dead: The Telltale Definitive Series', appid: 1449690, hours: 35.1, iconB64: '/9j/4AAQSkZJRgABAQIAJgAmAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADAREAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9U6ACgAoAKAPxN8T+GfgZP408e6NNpvj74d+HtB8Q6poV54v0jTYrrSojdXDKiXaRlXiii8tViTL7goOFIxQB6Td6FpX7RHjaw+H/AIb8NePrm5+Fa2vgu78beC7y0htrxI5ZEju57ZiAF4u3Uo7cTOSeQKAKV98Lvh5J42+Lvw2g+IvizVrP4TaZeeKTYDT7TyLmO3tLa3uYFmySZI4YLSAM6/LNEZV7ggGf+yVp3giw+OPwqv73xD8Tfh9c6lem88Lv4nsIJNN1qJ3ybSG5Uja0jTyqSE5E5XcC6hgCwuj/ABH1TUP2ovhD4S+FXiDXtW+IXjSZV168tGg0mwtEupm8+SdwF3HB2dAfvAsQFYApfsUR+Df2Yv2mvHNv4+8U+MdN1fw7rQ0TTbbR7G6fTNbCx3FrJPdwxwuWC/LKmWGC2fmwaAOEPwt8d+EvDFh8d9Rt9Tv0+K9p400/U9FtdKdZtOuLu1u4rcSNku6yOvm4KgKsWRndQB7R8F9S8b/tKx/svfD3w38NtX0Pw18LtQ03Xdf8W69ZtbW7zWux3hgbBzvGQBnc7OhKoiFqAP1eoAKACgAoA//Z' },
+    { name: 'The Binding of Isaac: Rebirth', appid: 250900, hours: 29.2, iconB64: '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADAREAAhEBAxEB/8QAGgABAAIDAQAAAAAAAAAAAAAACQIIAQUGB//EACYQAAICAgICAQQDAQAAAAAAAAECAwQFBgcRCBIACRMhMRQiQhb/xAAZAQACAwEAAAAAAAAAAAAAAAAAAwEEBQL/xAAmEQABBAEDBAIDAQAAAAAAAAABAAIDESEEMUESUWHhcZEUIqHw/9oADAMBAAIRAxEAPwA4OMuOdm535PxWo6+Bd2HNWGSNrU3og6Vnkkdj/lUV3PQJ6U9AnoHkmgnRRmVwaEqPGP0lONNYwhj3DIZHdMvJ0XsCZ6MEfRb8Rxxt7fkEAl3bsqCAvZHxZJK12aaNm4v/AHj2o8n/AEluNNmwgj0/IZHS8vH2UsGV70EnZX8SRyN7HoBgCjr0WJIboD4AkIfpo37Cvj36RX8m8dbNwTyfldSz4FLYMLYVZGqze6HtVeORGH+WRkcdgHph2AewGg2siWMxOLSrK/Tw5N1zhUcpbvkZqVXOUqmMo1bl1JZ1pVLWQjgt2mrxsHmSL2gkZE6dvUIrJ9wn4p5/YBX9LTYZJBuK57+6V2PHr6imC2zFcq5bknN4DGazqWXrUcZsmMo2qy5eGw9hYCtJ2mmEhWs0pQFiFY9qBEzETWT223YW05z+oFp+vaDhtk0LccBNSy1DMTUb2TxF26tm/RFcJjGrxvDJWkmNkMJpSFRUB9WEqsCkPn6QCzKP3zh5dx/kBqvC3ItnHUsVuuXw92DMVaUzMv269xooHVGYlUZxZK99n9qWf0B+DDkhL1dOijfyb57e7XgnDnKlvhzkKnsdejWzFVVkrX8Re7NbI1JVKTV5l/TKyn9MGAYKSD118bQsEi6NrNbI9jXtYa6gR9ir423+QEr3DXkP4n8o6RXpV56HE8mNyIzC0I7r6xPFbaGWt95J6ckQcmF5EISQ/wBHHsAT0CZ7DIXMFAqzoInnStimcCW3dkZs3Ys5xjvitqJxzL5D+KHF2kWKU9ihyzJksicw1CW6+zzy21hirfeee3JKEIhSNAHkH9EPqCR0SFzBIHPFgKdfE/8AFdFC4AuqqIxRuzRsYx3zW1kFFzFypb5j5CubFYo1sPVZY61DEUexWx1SJQkNeFf0qqo/ShQWLEAd9fChZIFWbVV0j3tY15vpAH0K877/ACSuOuU56VyaCeF4po3KvG6kFSD+QR8lcBIJ47eUvFOw8WZDCch6Lqk0HH+ow/8AOa9m46/plLyffe/PFM1fuOaywpgxduSVLAMfchBYtdmpaRsMAcA7Dz3OSoeQnlTxVg+KcfhuPNC1atByBqdhdj13Dx1wuLvMYGoWJJlr9yTVm/mAR9oQXDEIfQkDbUyahrRVA2OABuPHY/1H9Tpz3bkMEELyzSOFSNFJLEn8AD49Y5X/2Q==' },
+    { name: 'Hollow Knight', appid: 367520, hours: 27.6, iconB64: '/9j/4AAQSkZJRgABAQIAJQAlAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADAREAAhEBAxEB/8QAGgAAAgMBAQAAAAAAAAAAAAAABwgDBgkCBP/EACsQAAIBBAICAQIFBQAAAAAAAAECAwQFBhEHEgghABNBCRQiMVEVFzIzYf/EABkBAAIDAQAAAAAAAAAAAAAAAAQFAAIDAf/EACARAAIDAAICAwEAAAAAAAAAAAECAAMRBDESISIjUUH/2gAMAwEAAhEDEQA/AFy8LfFrEuRbDmPIfI9VJTYRisPU08XfdfWMoKQnoQ5UFoh0Qq7tMiqw9/CnHhir3Kj9gftGI0VFKP6hQ/UYKUeJ9gISCCTogkqfYG/ZHv18dLUoUaIvN7b6kS8dpcPzaUwLNFE8qjoSzhRv0ADo6/n1/wB+capM6llvYwteWXihj/HGDYByHhFclfi2T0EK1McMjyxUlw+j3dInkAcxOVl6hx3UxOG+wCatfMlW7h2/0Rg/EvH7Nyv40Zvw7a7vBb8hr2p8gpZK1gyfVBpxpuoJCCWlCsdEoJ4zonW9rvKu3zyZjGUgGWGzfhl8lXPGYKa53fF7XUrNJN2F1nnH6ggAKCmABHVtkOd7H7a96nm+9CzEcf44TOaT8PTnHjOqqLpieRYxWTyU8lLKtJcZIppIZF6umpIQmiPXtx8h5aOMdZFpZDqtKX5Z2WPh3xf4+4iuNbTV+UJcJr3VpSt2ip0LVTMFP8d6oIG9dvpyEffVeODZcXyXYhFCwA+N1yktHLHH1wWWWliS/wBBDJURMV0kk6JIpI+xRmBH3BP2+G8kA0mDr6tmo1j8iePMi5SuPHFvyamqcxt4b69tEcg/Ug26q5Xo7KP3VWJGj69HSQYYfJcv8gOPcEz+yYRfcmprflF66CioHSRi5duiBmVSqdmBA7kbI9fJskzG8gIbzd80zLJbl+aelrLxXx0dbW9tVMUVU8SpExGmEahF0P8AED464viKxncAsBNmnqDrjfLbY9FQ2m4s1BStWrNNdKbu9RAugvZI+4QlPbD0Dv0Tr5YfZWc/Jqy4wJ6jF8S3jhk+Sn9573mlzxy8GaasnsclnkenmrJY3SWaOeIv1iYuziNlDAnXYge1TcaxD7E2FqHoz0eQ2R8K5RzvQcvWfLLnkl6oFp5Y8bitUsVNNVU/+h5KmXp0iBVC6Krs2jrW/UXjWOesnDcijuLbmWc3K545RWyvutRW01D9RoI5pSyq8jFpGC70CzezrW/jkKtKeoKhaxtPQn//2Q==' },
+  ];
+
+  // Book pages — by author, <2 books grouped by category
+  const bookPages = [
+    {
+      author: '赫尔曼·黑塞',
+      category: '',
+      spineColors: ['#ff6b6b','#ffd93d','#6bcb77','#a78bfa'],
+      books: [
+        { title: '德米安',               quote: '鸟要挣脱出壳。蛋就是世界。谁要出生，就必须摧毁一个世界。' },
+        { title: '悉达多',               quote: '人生在世，皆在自渡。' },
+        { title: '荒原狼',               quote: '孤独就是独立。我渴望孤独，太久了。' },
+        { title: '纳尔齐斯与歌尔蒙德',     quote: '你的道路通向艺术，我的道路通向禁欲——但也许它们在某处交汇。' },
+      ]
+    },
+    {
+      author: '存在与意志',
+      category: '哲学',
+      spineColors: ['#4ecdc4','#a78bfa','#ff6b6b'],
+      books: [
+        { title: '局外人',           sub: '阿尔贝·加缪',    quote: '我们都被大众所裹挟，合群者生，局外者死。' },
+        { title: '时间与自由意志',     sub: '亨利·柏格森',    quote: '意识状态在性质上的差异，远比数量上的差异更为根本。' },
+        { title: '人生的智慧',        sub: '阿图尔·叔本华',   quote: '人生就像钟摆，在痛苦和无聊之间来回摆动。' },
+      ]
+    },
+    {
+      author: '爱与人间',
+      category: '文学',
+      spineColors: ['#ffd93d','#6bcb77','#ff6b6b','#a78bfa','#4ecdc4'],
+      books: [
+        { title: '霍乱时期的爱情',     sub: '加西亚·马尔克斯',  quote: '一生一世。' },
+        { title: '面纱',            sub: '毛姆',          quote: '我对你根本没抱幻想。我知道你愚蠢、轻浮、头脑空虚，然而我爱你。' },
+        { title: '人间食粮',         sub: '安德烈·纪德',     quote: '燃烧灵魂，去爱目之所及的始终新鲜的万物。' },
+        { title: '爱的艺术',         sub: '艾里希·弗洛姆',    quote: '爱不是一种感觉，而是一种需要学习和实践的能力。' },
+        { title: '宅门',            sub: '',             quote: '人这一辈子，总得守住点什么' },
+      ]
+    },
+  ];
+
+  // Music ranking — real data format: { name, artist, playCount }
+  // Replace this array with output from fetch_netease.py (requires local NeteaseCloudMusicApi)
+    const tracksData = [
+    { name: '世界真疯狂', artist: '小蓝背心', playCount: 436, id: 2161509374 },
+    { name: '谁家', artist: '池鱼', playCount: 231, id: 2024225492 },
+    { name: '虞兮叹', artist: '闻人听書_', playCount: 133, id: 1479526505 },
+    { name: '未完成秋天（feat.星尘）', artist: '乌托邦P', playCount: 97, id: 2666902718 },
+    { name: '唯一', artist: 'G.E.M.邓紫棋', playCount: 70, id: 2083785152 },
+    { name: '目及皆是你', artist: '小蓝背心', playCount: 67, id: 1847975477 },
+    { name: '泡沫', artist: 'G.E.M.邓紫棋', playCount: 66, id: 233931 },
+    { name: 'Yellow', artist: 'Coldplay', playCount: 64, id: 17177324 },
+    { name: '反乌托邦', artist: '乌托邦P', playCount: 64, id: 2671812705 },
+    { name: '做自己的月亮', artist: '小蓝背心', playCount: 58, id: 2160706892 },
+    { name: '打火机', artist: 'Penny', playCount: 57, id: 2712265619 },
+    { name: '句号', artist: 'G.E.M.邓紫棋', playCount: 57, id: 1405283464 },
+    { name: 'Lost', artist: 'Lost Sky', playCount: 55, id: 514761669 },
+    { name: 'SOLO(Kasper Moombahton Flip）', artist: 'Kasper', playCount: 55, id: 1822203789 },
+    { name: 'Good Time', artist: 'Owl City/Carly Rae Jepsen', playCount: 54, id: 17706562 },
+    { name: 'Merry Christmas Mr. Lawrence - FYI', artist: '宇多田ヒカル', playCount: 53, id: 1361336637 },
+    { name: '透明色', artist: '三月のパンタシア', playCount: 50, id: 1477273338 },
+    { name: 'We Don\'t Talk Anymore', artist: 'Charlie Puth/Selena Gomez', playCount: 49, id: 440317247 },
+    { name: 'Wellerman', artist: 'The Wellermen', playCount: 49, id: 1869059747 },
+    { name: '恋愛サーキュレーション (Yunomi “Kawaii EDM” Remix)', artist: '花澤香菜', playCount: 49, id: 1844799945 },
+  ];
+
+  /* ============================================================
+     RENDER NIGHT CONTENT
+     ============================================================ */
+  function renderGames() {
+    const grid = document.getElementById('gamesGrid');
+    const maxH = Math.max(...gamesData.map(g => g.hours), 1);
+    const SHOW_COUNT = 5;
+    grid.innerHTML = gamesData.map((g, i) => {
+      const pct = Math.round((g.hours / maxH) * 100);
+      const emoji = ['🎮','🕹️','🎯','⚔️','🔥','🌾','🐉','🪲','🏔️','🃏'][i % 10];
+      const hiddenCls = i >= SHOW_COUNT ? ' game-hidden' : '';
+      // Icon: embedded base64 → emoji
+      let imgHtml = emoji;
+      if (g.iconB64) {
+        imgHtml = `<img src="data:image/jpeg;base64,${g.iconB64}" alt="" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center">${emoji}</span>`;
+      }
+      return `
+        <div class="game-row${hiddenCls}">
+          <div class="game-icon">${imgHtml}</div>
+          <div class="game-body">
+            <div class="game-name">${g.name}</div>
+            <div class="game-bar-wrap">
+              <div class="game-bar-fill" style="width:${pct}%"></div>
+            </div>
+          </div>
+          <div class="game-hours">${g.hours}h</div>
+        </div>`;
+    }).join('')
+    + (gamesData.length > SHOW_COUNT ? `
+      <div class="game-toggle-wrap">
+        <button class="game-toggle-btn" id="gameToggle">展开全部 (共${gamesData.length}款)</button>
+      </div>` : '');
+
+    const btn = document.getElementById('gameToggle');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const hidden = grid.querySelectorAll('.game-hidden');
+        const expanded = btn.dataset.expanded === '1';
+        hidden.forEach(el => el.classList.toggle('show', !expanded));
+        btn.textContent = expanded ? `展开全部 (共${gamesData.length}款)` : '收起';
+        btn.dataset.expanded = expanded ? '0' : '1';
+      });
+    }
+  }
+
+  function renderBooks() {
+    const carousel = document.getElementById('bookCarousel');
+    if (!carousel) return;
+    let currentPage = 0;
+
+    function showPage(idx) {
+      currentPage = (idx + bookPages.length) % bookPages.length;
+      carousel.querySelectorAll('.book-page').forEach((p, i) => {
+        p.classList.toggle('active', i === currentPage);
+      });
+      carousel.querySelectorAll('.book-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === currentPage);
+      });
+      const prev = carousel.querySelector('.book-nav-prev');
+      const next = carousel.querySelector('.book-nav-next');
+      if (prev) prev.disabled = currentPage === 0;
+      if (next) next.disabled = currentPage === bookPages.length - 1;
+    }
+
+    carousel.innerHTML = bookPages.map((page, pi) => `
+      <div class="book-page${pi === 0 ? ' active' : ''}">
+        <div class="book-page-header">
+          <span class="page-author">${page.author}</span>
+          ${page.category ? `<span class="page-cat">· ${page.category}</span>` : ''}
+        </div>
+        ${page.books.map((b, bi) => `
+          <div class="book-item">
+            <div class="book-spine" style="background:${page.spineColors[bi % page.spineColors.length]}"></div>
+            <div class="book-detail">
+              <div class="book-title">${b.title}</div>
+              ${b.sub ? `<div class="book-sub">${b.sub}</div>` : ''}
+              <div class="book-quote">${b.quote}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('')
+    + `
+      <div class="book-nav">
+        <button class="book-nav-btn book-nav-prev" disabled>◂</button>
+        <div class="book-dots">
+          ${bookPages.map((_, i) => `<span class="book-dot${i === 0 ? ' active' : ''}"></span>`).join('')}
+        </div>
+        <button class="book-nav-btn book-nav-next${bookPages.length <= 1 ? ' disabled' : ''}">▸</button>
+      </div>`;
+
+    carousel.querySelector('.book-nav-prev').addEventListener('click', () => showPage(currentPage - 1));
+    carousel.querySelector('.book-nav-next').addEventListener('click', () => showPage(currentPage + 1));
+    carousel.querySelectorAll('.book-dot').forEach((dot, i) => {
+      dot.addEventListener('click', () => showPage(i));
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    carousel.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    carousel.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) showPage(currentPage + (dx < 0 ? 1 : -1));
+    });
+  }
+
+        function renderPlaylist() {
+    const list = document.getElementById('playlist');
+    const maxCount = Math.max(...tracksData.map(t => t.playCount), 1);
+    const SHOW_COUNT = 5;
+    list.innerHTML = tracksData.map((t, i) => {
+      const pct = Math.round((t.playCount / maxCount) * 100);
+      const hiddenCls = i >= SHOW_COUNT ? ' hidden-row' : '';
+      return `
+        <li class="${hiddenCls}" data-id="${t.id}">
+          <span class="track-rank">${i + 1}</span>
+          <span class="track-info">
+            <div class="track-name">${t.name}</div>
+            <div class="track-artist">${t.artist}</div>
+            <div class="track-bar-wrap">
+              <div class="track-bar-fill" style="width:${pct}%"></div>
+            </div>
+          </span>
+          <span class="track-count">${t.playCount}次</span>
+        </li>`;
+    }).join('')
+    + (tracksData.length > SHOW_COUNT ? `
+      <div class="game-toggle-wrap">
+        <button class="game-toggle-btn" id="trackToggle">展开全部 (共${tracksData.length}首)</button>
+      </div>` : '');
+
+    const btn = document.getElementById('trackToggle');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const hidden = list.querySelectorAll('.hidden-row');
+        const expanded = btn.dataset.expanded === '1';
+        hidden.forEach(el => el.classList.toggle('show', !expanded));
+        btn.textContent = expanded ? `展开全部 (共${tracksData.length}首)` : '收起';
+        btn.dataset.expanded = expanded ? '0' : '1';
+      });
+    }
+
+    // Click-to-play (local API → NetEase iframe → silent)
+    const audio = document.getElementById('audioPlayer');
+    const miniP = document.getElementById('miniPlayer');
+    const extP = document.getElementById('extPlayer');
+    const mpBtn = document.getElementById('mpBtn');
+    const mpName = document.getElementById('mpName');
+    const mpArtist = document.getElementById('mpArtist');
+    const mpEq = document.getElementById('mpEq');
+    let currentId = null;
+    let useExt = false;  // true = using NetEase iframe fallback
+
+    function resetPlayers() {
+      audio.pause(); audio.src = '';
+      miniP.classList.remove('show');
+      extP.innerHTML = '';
+      mpEq.classList.remove('active');
+      useExt = false;
+      mpBtn.textContent = '▶';
+    }
+
+    list.addEventListener('click', async (e) => {
+      const li = e.target.closest('li');
+      if (!li) return;
+      const id = li.dataset.id;
+      if (!id) return;
+
+      // Same song: toggle or ignore (iframe handles itself)
+      if (currentId === id) {
+        if (useExt) return; // iframe self-manages
+        if (audio.paused) { audio.play(); mpBtn.textContent = '⏸'; }
+        else { audio.pause(); mpEq.classList.remove('active'); mpBtn.textContent = '▶'; }
+        return;
+      }
+
+      // Different song: cleanup old
+      resetPlayers();
+      const track = tracksData.find(t => t.id == id);
+      if (!track) return;
+
+      // Highlight
+      list.querySelectorAll('li.playing').forEach(el => el.classList.remove('playing'));
+      li.classList.add('playing');
+
+      // Attempt 1: local API
+      mpBtn.textContent = '…';
+      miniP.classList.add('show');
+      mpName.textContent = track.name;
+      mpArtist.textContent = track.artist;
+
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const resp = await fetch(`http://localhost:3000/song/url?id=${id}`, { signal: controller.signal });
+        clearTimeout(timeout);
+        const data = await resp.json();
+        if (data.code === 200 && data.data[0] && data.data[0].url) {
+          audio.src = data.data[0].url;
+          audio.play();
+          mpEq.classList.add('active');
+          mpBtn.textContent = '⏸';
+          currentId = id;
+          return;
+        }
+      } catch (e) {
+        // local API unreachable → fallback
+      }
+
+      // Attempt 2: NetEase official iframe
+      miniP.classList.remove('show');
+      extP.innerHTML = `<iframe src="https://music.163.com/outchain/player?type=2&id=${id}&auto=1&height=66"></iframe>`;
+      mpEq.classList.add('active');
+      useExt = true;
+      mpBtn.textContent = '▶';
+      currentId = id;
+    });
+
+    // Mini player button
+    mpBtn.addEventListener('click', () => {
+      if (!currentId) return;
+      if (useExt) return;
+      if (audio.paused) { audio.play(); mpEq.classList.add('active'); mpBtn.textContent = '⏸'; }
+      else { audio.pause(); mpEq.classList.remove('active'); mpBtn.textContent = '▶'; }
+    });
+
+    // Reset button when audio ends
+    audio.addEventListener('ended', () => { mpBtn.textContent = '▶'; });
+    audio.addEventListener('pause', () => { mpBtn.textContent = '▶'; });
+    audio.addEventListener('play', () => { mpBtn.textContent = '⏸'; });
+  }
+
+  renderGames();
+  renderBooks();
+  renderPlaylist();
+
+  /* ============================================================
+     DAY/NIGHT TOGGLE
+     ============================================================ */
+  function toggleMode() {
+    const isNight = !body.classList.contains('night');
+    body.classList.toggle('night');
+    saveTheme(isNight);
+
+    if (isNight) {
+      modeHint.textContent = '🌙';
+      headerSub.textContent = '入夜了，来看看我的另一面吧';
+    } else {
+      modeHint.textContent = '☀️';
+      headerSub.textContent = '每一段经历，都值得被可视化地珍藏';
+    }
+  }
+
+  // Footer button
+  footerBtn.addEventListener('click', toggleMode);
+
+  // Corner hint
+  modeHint.addEventListener('click', toggleMode);
+
+  // Keyboard shortcut
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'n' && !e.target.closest('input,textarea,[contenteditable]')) {
+      toggleMode();
+    }
+  });
+
+  /* ============================================================
+     AVATAR INTERACTION
+     ============================================================ */
+
+  // Hover toast messages
+  const hoverMessages = [
+    '👋 你好呀，我是陈耀',
+    '🤔 想了解我吗？点我试试',
+    '☀️ 白天看简历，晚上看兴趣',
+    '🔍 你在盯着我看吗…',
+    '😄 别犹豫，快点我！',
+    '🌙 连点 5 次有惊喜哦',
+    '🎮 我游戏玩得不错',
+    '📚 最近在读什么书呢',
+  ];
+  let hoverIdx = 0;
+  avatarWrap.addEventListener('mouseenter', () => {
+    hoverIdx = (hoverIdx + 1) % hoverMessages.length;
+    avatarToast.textContent = hoverMessages[hoverIdx];
+  });
+
+  // Click
+  avatarWrap.addEventListener('click', (e) => {
+    // Ripple
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const size = avatarImg.offsetWidth;
+    const rect = avatarImg.getBoundingClientRect();
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+    ripple.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+    avatarImg.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+
+    // Counting
+    if (clickTimer) clearTimeout(clickTimer);
+    clickCount++;
+    updateDots();
+
+    if (clickCount >= 5) {
+      toggleMode();
+      clickCount = 0;
+      updateDots();
+      clearTimeout(clickTimer);
+      clickTimer = null;
+      avatarToast.textContent = body.classList.contains('night')
+        ? '🌙 欢迎来到夜间模式！'
+        : '☀️ 回到日间模式！';
+    } else {
+      const msgs = [
+        `点击 ×1 …再点几下？`,
+        `点击 ×2 ⚡ 能量聚集`,
+        `点击 ×3 🔥 快了！`,
+        `点击 ×4 💥 再点一次！`,
+      ];
+      avatarToast.textContent = msgs[clickCount - 1] || `点击 ×${clickCount}`;
+      clickTimer = setTimeout(() => {
+        if (clickCount < 5) {
+          avatarToast.textContent = hoverMessages[hoverIdx];
+        }
+        clickCount = 0;
+        updateDots();
+        clickTimer = null;
+      }, CLICK_WINDOW);
+    }
+  });
+
+  function updateDots() {
+    dots.forEach((d, i) => d.classList.toggle('filled', i < clickCount));
+    if (clickCount > 0) {
+      clickDots.classList.add('has-clicks');
+    } else {
+      clickDots.classList.remove('has-clicks');
+    }
+  }
+
+  /* ============================================================
+     NIGHT MODE: STARFIELD
+     ============================================================ */
+  (function initStarfield() {
+    const canvas = document.getElementById('starCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let stars = [], animId, w, h, running = false;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', () => { resize(); initStars(); });
+
+    function initStars() {
+      stars = Array.from({length: 100}, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.5 + 0.3,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        twinkle: Math.random() * Math.PI * 2,
+        ts: Math.random() * 0.02 + 0.005
+      }));
+    }
+    initStars();
+
+    let mouseX = w / 2, mouseY = h / 2;
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        s.twinkle += s.ts;
+        const alpha = 0.4 + Math.sin(s.twinkle) * 0.4;
+        const dx = mouseX - s.x, dy = mouseY - s.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) { s.x += dx * 0.001; s.y += dy * 0.001; }
+        s.x += s.vx; s.y += s.vy;
+        if (s.x < 0) s.x = w; else if (s.x > w) s.x = 0;
+        if (s.y < 0) s.y = h; else if (s.y > h) s.y = 0;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+        ctx.fill();
+      }
+      animId = requestAnimationFrame(draw);
+    }
+
+    function start() {
+      if (running) return;
+      running = true;
+      animId = requestAnimationFrame(draw);
+    }
+    function stop() {
+      running = false;
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      ctx.clearRect(0, 0, w, h);
+    }
+
+    // Watch body class for night mode changes
+    new MutationObserver(() => {
+      document.body.classList.contains('night') ? start() : stop();
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    // Also check on toggle
+    const origToggle = window.toggleMode;
+    if (document.body.classList.contains('night')) start();
+  })();
+
+  /* ============================================================
+     NIGHT MODE: 3D TILT ON GLASS CARDS
+     ============================================================ */
+  (function initTilt() {
+    document.querySelectorAll('.glass-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        if (!document.body.classList.contains('night')) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rx = ((y / rect.height) - 0.5) * 3;
+        const ry = ((x / rect.width) - 0.5) * -3;
+        card.style.transform = 'perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(800px) rotateX(0) rotateY(0)';
+      });
+    });
+  })();
+
+  /* ============================================================
+     NIGHT MODE: CURSOR TRAIL
+     ============================================================ */
+  (function initTrail() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'trailCanvas';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    let w, h, animId, running = false;
+    const trail = [];
+    const MAX = 30;
+
+    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    document.addEventListener('mousemove', e => {
+      if (!document.body.classList.contains('night')) return;
+      trail.push({ x: e.clientX, y: e.clientY, life: 1 });
+      if (trail.length > MAX) trail.shift();
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < trail.length; i++) {
+        const t = trail[i];
+        t.life -= 0.03;
+        if (t.life <= 0) { trail.splice(i, 1); i--; continue; }
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.life * 4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,107,107,' + (t.life * 0.7) + ')';
+        ctx.fill();
+      }
+      animId = requestAnimationFrame(draw);
+    }
+
+    new MutationObserver(() => {
+      if (document.body.classList.contains('night')) {
+        if (!running) { running = true; animId = requestAnimationFrame(draw); }
+      } else {
+        running = false;
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
+        ctx.clearRect(0, 0, w, h);
+      }
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    if (document.body.classList.contains('night')) { running = true; animId = requestAnimationFrame(draw); }
+  })();
+
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+
+  // Restore saved theme; remove anti-FOUC preload style if present
+  if (loadTheme() === 'night') {
+    body.classList.add('night');
+    var preload = document.getElementById('nightPreload');
+    if (preload) preload.remove();
+    modeHint.textContent = '🌙';
+    headerSub.textContent = '入夜了，来看看我的另一面吧';
+  }
+
+  console.log('🏛️  个人档案已就绪');
+  console.log(body.classList.contains('night')
+    ? '  🌙  当前：夜间模式（兴趣生活）'
+    : '  ☀️  当前：日间模式（专业简历）');
+  console.log('  🖱️  悬停头像 → 互动泡泡');
+  console.log('  👆 连续点击头像 5 次 → 切换日夜模式');
+  console.log('  ⌨️  按键盘 N 键 → 快速切换');
+  console.log('  🌙  夜间模式：Steam 游戏库 / 书单 / 听歌排行');
+})();
+</script>
+</body>
+</html>

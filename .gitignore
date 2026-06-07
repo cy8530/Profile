@@ -1,0 +1,20 @@
+# 敏感信息
+netease_cookie.txt
+
+# 本地工具脚本
+fetch_netease.py
+fetch_steam.py
+
+# 原始数据（已内嵌到 HTML）
+steam_games.json
+netease_songs.json
+
+# 游戏图标（已 base64 内嵌）
+icons/
+
+# macOS
+.DS_Store
+
+# IDE / AI
+.claude/
+.idea/
